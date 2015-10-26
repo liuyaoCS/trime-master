@@ -22,26 +22,32 @@
         android:id="@+id/candidate_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+    android:orientation="vertical"
         >
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/suggestion_view"
+        android:divider="@null"
+        android:scrollbars="none"
+        android:visibility="gone"></ListView>
   <HorizontalScrollView android:id="@+id/scroll"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentTop="true"
     android:layout_alignParentLeft="true"
     android:fillViewport="true">
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-       <ListView
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:id="@+id/suggestion_view"
-           android:visibility="gone"></ListView>
+        android:orientation="vertical"
+        android:background="@drawable/candidate_bg">
+
       <com.osfans.view.CandidateView
           android:id="@+id/candidate"
-          android:layout_width="1000px"
+          android:layout_width="match_parent"
           android:layout_height="120px"
+
           />
     </LinearLayout>
   </HorizontalScrollView>

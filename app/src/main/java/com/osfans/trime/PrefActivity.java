@@ -19,6 +19,7 @@ package com.osfans.trime;
 import com.osfans.dialog.ColorDialog;
 import com.osfans.dialog.ResetDialog;
 import com.osfans.dialog.SchemaDialog;
+import com.osfans.helper.Config;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -62,6 +63,7 @@ public class PrefActivity extends PreferenceActivity {
     pref.setSummary(Rime.get_opencc_version());
     pref = findPreference("pref_ver");
     pref.setSummary(getVersion());
+
   }
 
   private void showLicenseDialog() {
@@ -90,6 +92,7 @@ public class PrefActivity extends PreferenceActivity {
   public static void deploy() {
     Rime.destroy();
     Rime.get(true);
+
     TrimeService trime = TrimeService.getService();
     if (trime != null) trime.invalidate();
     System.exit(0); //清理內存
@@ -110,8 +113,8 @@ public class PrefActivity extends PreferenceActivity {
       case "pref_schemas": //方案
         new SchemaDialog(this).show();
         return true;
-      case "pref_maintenance": //維護
-        check();
+      case "pref_init": //初始化
+        Config.prepareRime(this);
         return true;
       case "pref_deploy": //部署
         deploy();

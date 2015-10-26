@@ -554,12 +554,8 @@ public class TrimeService extends InputMethodService implements
       final int inputType=editInfo.inputType;
       final int fieldId=editInfo.fieldId;
       Log.info("packageName=" + packageName + ",inputType=" + inputType + ",fieldId=" + fieldId);
-      if (mCandidateContainer != null && (inputType==1 || inputType==17) && fieldId>0) {
-        /**
-         * TYPE_CLASS_TEXT              0x00000001
-         * TYPE_TEXT_FLAG_AUTO_COMPLETE 0x00010000
-         * TYPE_TEXT_VARIATION_URI      0x00000010
-         */
+      if (mCandidateContainer != null && checkInputType(inputType,fieldId)) {
+
         String str= Rime.getComposingText();
         if (str == null) str = "";
         NetworkService.getInstance().getSuggestList(str, new Callback<List<String>>() {
@@ -590,6 +586,20 @@ public class TrimeService extends InputMethodService implements
     mFloatingWindowTimer.postShowFloatingWindow();
 
     mKeyboardView.invalidateComposingKeys();
+  }
+  private boolean checkInputType(int inputType,int fieldId){
+    /**
+     * TYPE_CLASS_TEXT                     0x00000001 1
+     * TYPE_TEXT_VARIATION_URI             0x00000010 16+1=17
+     * TYPE_TEXT_FLAG_AUTO_COMPLETE        0x00010000 65536+1=65537
+     * TYPE_TEXT_VARIATION_WEB_EDIT_TEXT   0x000000a0 160+1=161
+     */
+    if(fieldId>0){             //native
+      if(inputType==1 || inputType==17 || inputType==65537)return true;
+    }else{                     //web
+      if(inputType==161)return true;
+    }
+    return false;
   }
 
   private void showDialog(AlertDialog dialog) {

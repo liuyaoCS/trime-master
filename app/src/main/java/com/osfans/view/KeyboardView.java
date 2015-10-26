@@ -399,7 +399,7 @@ public class KeyboardView extends View implements View.OnClickListener {
      * Returns the state of the shift key of the keyboard, if any.
      * @return true if the shift is in a pressed state, false otherwise. If there is
      * no shift key on the keyboard or there is no keyboard attached, it returns false.
-     * @see KeyboardView#setShifted(boolean)
+     * @see KeyboardView setShifted(boolean)#
      */
     public boolean isShifted() {
         if (mKeyboard != null) {
@@ -557,8 +557,8 @@ public class KeyboardView extends View implements View.OnClickListener {
                 continue;
             }
             int[] drawableState = key.getCurrentDrawableState();
-            keyBackground = new ColorDrawable(mKeyBackColor.getColorForState(drawableState, 0));
-            //keyBackground=mContext.getResources().getDrawable(R.drawable.key_bg);
+            //keyBackground = new ColorDrawable(mKeyBackColor.getColorForState(drawableState, 0));
+            keyBackground=mContext.getResources().getDrawable(R.drawable.key_bg);
             mPaint.setColor(mKeyTextColor.getColorForState(drawableState, 0));
             mPaintSymbol.setColor(key.pressed ? hilited_key_symbol_color: key_symbol_color);
 
