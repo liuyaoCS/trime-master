@@ -115,24 +115,14 @@ public class PrefActivity extends PreferenceActivity {
       case "pref_schemas": //方案
         new SchemaDialog(this).show();
         return true;
-      case "pref_init": //初始化
-        Config.prepareRime(this);
-        System.exit(0); //清理內存
-        return true;
       case "pref_deploy": //部署
         if (!new File(Config.USER_DATA_DIR).exists()) {
           Config.copyFileOrDir(this, "rime", false);
         }
         deploy();
         return true;
-      case "pref_sync": //同步
-        sync();
-        return true;
       case "pref_reset": //回廠
         new ResetDialog(this).show();
-        return true;
-      case "pref_licensing": //資訊
-        showLicenseDialog();
         return true;
     }
     return false;
