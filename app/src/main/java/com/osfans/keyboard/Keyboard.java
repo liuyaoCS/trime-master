@@ -111,6 +111,7 @@ public class Keyboard {
     private int mProximityThreshold;
     /** Number of key widths from current touch point to search for nearest keys. */
     private static float SEARCH_DISTANCE = 1.4f;
+    private String mName="default";
 
     /**
      * Creates a keyboard from the given xml key layout file.
@@ -328,10 +329,13 @@ public class Keyboard {
         }
         return new int[0];
     }
-
+    public String getName(){
+        return mName;
+    }
   public Keyboard(Context context, String name) {
     this(context);
     Map<String,Object> m = Config.get().getKeyboard(name);
+      mName=(String)Key.getValue(m, "name", "default");
     mAsciiMode = (Integer)Key.getValue(m, "ascii_mode", 1);
     int columns = (Integer)Key.getValue(m, "columns", 20);
     int defaultWidth = (int)(Key.getDouble(m, "width", 0) * mDisplayWidth / 100);

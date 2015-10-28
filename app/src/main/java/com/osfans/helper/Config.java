@@ -35,7 +35,7 @@ public class Config {
   private Map<String, Object> mStyle, mDefaultStyle;
   private Map<String, Map<String, Object>> maps;
   private String defaultName = "trime.yaml";
-  private static String USER_DATA_DIR = "/sdcard/rime";
+  public static String USER_DATA_DIR = "/sdcard/rime";
   private static int BLK_SIZE = 1024;
   private static Config self = null;
 
@@ -55,7 +55,7 @@ public class Config {
   }
 
   public static boolean prepareRime(Context context) {
-    Log.e("Config", "prepare rime");
+    Log.i("Config", "prepare rime");
     if (new File(USER_DATA_DIR).exists()) return false;
     copyFileOrDir(context, "rime", false);
     Rime.get(true);

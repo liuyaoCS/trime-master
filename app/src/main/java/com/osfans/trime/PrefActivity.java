@@ -37,6 +37,8 @@ import android.webkit.WebViewClient;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.File;
+
 /**
  * Manages IME preferences. 
  */
@@ -115,8 +117,12 @@ public class PrefActivity extends PreferenceActivity {
         return true;
       case "pref_init": //初始化
         Config.prepareRime(this);
+        System.exit(0); //清理內存
         return true;
       case "pref_deploy": //部署
+        if (!new File(Config.USER_DATA_DIR).exists()) {
+          Config.copyFileOrDir(this, "rime", false);
+        }
         deploy();
         return true;
       case "pref_sync": //同步

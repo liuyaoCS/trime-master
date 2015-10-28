@@ -31,6 +31,8 @@ import android.app.AlertDialog;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.LinearLayout;
@@ -73,6 +75,8 @@ public class TrimeService extends InputMethodService implements
   private CandidateView mCandidate; //候選
   private CompositionView mComposition; //編碼
   private LinearLayout mCandidateContainer,  mCompositionContainer;
+  private ImageButton suggest_show;
+  private boolean suggest_on=true;
   private PopupWindow mFloatingWindow;
   private PopupTimer mFloatingWindowTimer = new PopupTimer();
   private AlertDialog mOptionsDialog; //對話框
@@ -273,6 +277,14 @@ public class TrimeService extends InputMethodService implements
     mCandidate.setCandidateListener(this);
     
     mSuggestListView =(ListView) mCandidateContainer.findViewById(R.id.suggestion_view);
+    suggest_show =(ImageButton)mCandidateContainer.findViewById(R.id.suggest_show);
+    suggest_show.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        suggest_on=!suggest_on;
+        mSuggestListView.setVisibility(suggest_on?View.VISIBLE:View.GONE);
+      }
+    });
     
     return mCandidateContainer;
   }
@@ -514,12 +526,14 @@ public class TrimeService extends InputMethodService implements
 
   public boolean swipeUp() {
     // no-op
-    return false;
+    Log.info("swipe up");
+    return true;
   }
 
   public boolean swipeDown() {
-    // requestHideSelf(0); //隱藏輸入窗
-    return false;
+    Log.info("swipe down");
+     requestHideSelf(0); //隱藏輸入窗
+    return true;
   }
 
   public void onPickCandidate(int i) {
@@ -553,8 +567,9 @@ public class TrimeService extends InputMethodService implements
       final String packageName=editInfo.packageName;
       final int inputType=editInfo.inputType;
       final int fieldId=editInfo.fieldId;
-      Log.info("packageName=" + packageName + ",inputType=" + inputType + ",fieldId=" + fieldId);
-      if (mCandidateContainer != null && checkInputType(inputType,fieldId)) {
+      final String label= (String) editInfo.label;
+      Log.info("packageName=" + packageName + ",inputType=" + inputType + ",fieldId=" + fieldId+" label="+label);
+      if (suggest_on && mCandidateContainer != null && checkInputType(inputType,fieldId)) {
 
         String str= Rime.getComposingText();
         if (str == null) str = "";

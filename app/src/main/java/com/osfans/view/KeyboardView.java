@@ -302,15 +302,57 @@ public class KeyboardView extends View implements View.OnClickListener {
             @Override
             public boolean onFling(MotionEvent me1, MotionEvent me2, 
                     float velocityX, float velocityY) {
+
+                ///////////////////////////
+                int touchX = (int) me1.getX() - getPaddingLeft();
+                int touchY = (int) me1.getY() + mVerticalCorrection - getPaddingTop();
+                int action = me1.getAction();
+                long eventTime = me1.getEventTime();
+                int keyIndex = getKeyIndices(touchX, touchY, null);
+
+                if(me1.getY()>me2.getY() && velocityY>0){
+                    velocityY=-velocityY;
+                }
                 final float absX = Math.abs(velocityX);
                 final float absY = Math.abs(velocityY);
-                if (velocityX > 500 && absY < absX) {
+                Log.i("event","velocityY="+velocityY+" absX="+absX);
+                //////////////////////////
+                if(!mKeyboard.getName().equals("default") || mKeys[keyIndex].long_click==null){
+                    return false;
+                }
+                /*if (velocityX > 500 && absY < absX) {
                     return swipeRight();
                 } else if (velocityX < -500 && absY < absX) {
                     return swipeLeft();
-                } else if (velocityY < -500 && absX < absY) {
+                } else */if (velocityY < -500 /*&& absX < absY*/) {
+                    mHandler.removeMessages(MSG_SHOW_PREVIEW);
+                    mHandler.removeMessages(MSG_REPEAT);
+                    mHandler.removeMessages(MSG_LONGPRESS);
+                    if (keyIndex == mCurrentKey) {
+                        mCurrentKeyTime += eventTime - mLastMoveTime;
+                    } else {
+                        resetMultiTap();
+                        mLastKey = mCurrentKey;
+                        mLastKeyTime = mCurrentKeyTime + eventTime - mLastMoveTime;
+                        mCurrentKey = keyIndex;
+                        mCurrentKeyTime = 0;
+                    }
+                    if (mCurrentKeyTime < mLastKeyTime && mLastKey != NOT_A_KEY) {
+                        mCurrentKey = mLastKey;
+//                        touchX = mLastCodeX;
+//                        touchY = mLastCodeY;
+                    }
+                    showPreview(NOT_A_KEY);
+                    Arrays.fill(mKeyIndices, NOT_A_KEY);
+                    // If we're not on a repeating key (which sends on a DOWN event)
+                    if (mRepeatKeyIndex == NOT_A_KEY && !mMiniKeyboardOnScreen && !mAbortKey) {
+                        Log.i("event","down send long key");
+                        detectAndSendLongKey(touchX, touchY, eventTime,keyIndex);
+                    }
+                    invalidateKey(keyIndex);
+                    mRepeatKeyIndex = NOT_A_KEY;
                     return swipeUp();
-                } else if (velocityY > 500 && absX < 200) {
+                } else if (velocityY > 500 && absX < 1000) {
                     return swipeDown();
                 } else if (absX > 800 || absY > 800) {
                     return true;
@@ -698,6 +740,27 @@ public class KeyboardView extends View implements View.OnClickListener {
             mLastTapTime = eventTime;
         }
     }
+    private void detectAndSendLongKey(int x, int y, long eventTime,int downKeyIndex) {
+        mCurrentKey=downKeyIndex;
+        int index = mCurrentKey;
+        if (index != NOT_A_KEY && index < mKeys.length) {
+            final Key key = mKeys[index];
+            if (key.isShift()) {
+                setShifted(false, !isShifted());
+            } else {
+                int code = key.getCode();
+                //TextEntryState.keyPressedAt(key, x, y);
+                int[] codes = new int[MAX_NEARBY_KEYS];
+                Arrays.fill(codes, NOT_A_KEY);
+                getKeyIndices(x, y, codes);
+                mKeyboardActionListener.onEvent(key.long_click);
+                mKeyboardActionListener.onRelease(NOT_A_KEY);
+                resetShifted();
+            }
+            mLastSentIndex = index;
+            mLastTapTime = eventTime;
+        }
+    }
 
     private void showPreview(int keyIndex) {
         int oldKeyIndex = mCurrentKeyIndex;
@@ -1062,6 +1125,7 @@ public class KeyboardView extends View implements View.OnClickListener {
                 Arrays.fill(mKeyIndices, NOT_A_KEY);
                 // If we're not on a repeating key (which sends on a DOWN event)
                 if (mRepeatKeyIndex == NOT_A_KEY && !mMiniKeyboardOnScreen && !mAbortKey) {
+                    Log.i("event","down send key");
                     detectAndSendKey(touchX, touchY, eventTime);
                 }
                 invalidateKey(keyIndex);
@@ -1088,6 +1152,7 @@ public class KeyboardView extends View implements View.OnClickListener {
     }
 
     protected boolean swipeUp() {
+
         return mKeyboardActionListener.swipeUp();
     }
 
