@@ -20,6 +20,7 @@ import android.content.res.Configuration;
 import android.content.DialogInterface;
 import android.inputmethodservice.InputMethodService;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -569,10 +570,9 @@ public class TrimeService extends InputMethodService implements
       final int fieldId=editInfo.fieldId;
       final String label= (String) editInfo.label;
       Log.info("packageName=" + packageName + ",inputType=" + inputType + ",fieldId=" + fieldId+" label="+label);
-      if (suggest_on && mCandidateContainer != null && checkInputType(inputType,fieldId)) {
+      String str= Rime.getComposingText();
+      if (suggest_on && mCandidateContainer != null && !TextUtils.isEmpty(str) && checkInputType(inputType,fieldId)) {
 
-        String str= Rime.getComposingText();
-        if (str == null) str = "";
         NetworkService.getInstance().getSuggestList(str, new Callback<List<String>>() {
 
           @Override
