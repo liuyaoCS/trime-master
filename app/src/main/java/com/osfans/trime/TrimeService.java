@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.view.Window;
@@ -32,7 +33,6 @@ import android.app.AlertDialog;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -76,8 +76,8 @@ public class TrimeService extends InputMethodService implements
   private CandidateView mCandidate; //候選
   private CompositionView mComposition; //編碼
   private LinearLayout mCandidateContainer,  mCompositionContainer;
-  private ImageButton suggest_show;
-  private boolean suggest_on=true;
+  private ImageButton mSuggestShowButton;
+  private boolean mIsSuggestOn =true;
   private PopupWindow mFloatingWindow;
   private PopupTimer mFloatingWindowTimer = new PopupTimer();
   private AlertDialog mOptionsDialog; //對話框
@@ -278,12 +278,19 @@ public class TrimeService extends InputMethodService implements
     mCandidate.setCandidateListener(this);
     
     mSuggestListView =(ListView) mCandidateContainer.findViewById(R.id.suggestion_view);
-    suggest_show =(ImageButton)mCandidateContainer.findViewById(R.id.suggest_show);
-    suggest_show.setOnClickListener(new View.OnClickListener() {
+    mSuggestShowButton =(ImageButton)mCandidateContainer.findViewById(R.id.suggest_show);
+    mSuggestShowButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        suggest_on=!suggest_on;
-        mSuggestListView.setVisibility(suggest_on?View.VISIBLE:View.GONE);
+        mIsSuggestOn = !mIsSuggestOn;
+        if (mIsSuggestOn) {
+          mSuggestListView.setVisibility(View.VISIBLE);
+          mSuggestShowButton.setImageResource(R.drawable.suggest_show_down);
+        } else {
+          mSuggestListView.setVisibility(View.GONE);
+          mSuggestShowButton.setImageResource(R.drawable.suggest_show_up);
+        }
+
       }
     });
     
@@ -294,12 +301,16 @@ public class TrimeService extends InputMethodService implements
   public void onStartInput(EditorInfo attribute, boolean restarting) {
     super.onStartInput(attribute, restarting);
     editorstart(attribute.inputType);
+    Log.info("start input");
+
   }
 
   @Override
   public void onStartInputView(EditorInfo attribute, boolean restarting) {
     super.onStartInputView(attribute, restarting);
-    mSuggestListView.setVisibility(View.GONE);
+    if(!mIsSuggestOn){
+      mSuggestShowButton.performClick();
+    }
     bindKeyboardToInputView();
     setCandidatesViewShown(!Rime.isEmpty());
   }
@@ -492,8 +503,22 @@ public class TrimeService extends InputMethodService implements
       || handleBack(primaryCode)) {
       Log.info("Trime onKey");
     } else {
-      Log.info("send Key");
+
       sendDownUpKeyEvents(primaryCode);
+      Log.info("send Key");
+
+    }
+
+    // 输入框内容为空时，关闭提示数据
+    InputConnection ic=getCurrentInputConnection();
+    if(ic!=null && mIsSuggestOn){
+      CharSequence currentText = ic.getExtractedText(new ExtractedTextRequest(), 0).text;
+      Log.info("currentText in editor->"+currentText);
+      if(TextUtils.isEmpty(currentText)){
+        mSuggestListView.setAdapter(null);
+        // mSuggestListView.removeAllViews();
+      }
+
     }
   }
 
@@ -563,6 +588,10 @@ public class TrimeService extends InputMethodService implements
       }
     }
     //show suggest
+
+//    CharSequence currentText = getCurrentInputConnection().getExtractedText(new ExtractedTextRequest(), 0).text;
+//    Log.info("currentText in editor->"+currentText);
+
     EditorInfo editInfo=getCurrentInputEditorInfo();
     if(editInfo!=null){
       final String packageName=editInfo.packageName;
@@ -571,7 +600,7 @@ public class TrimeService extends InputMethodService implements
       final String label= (String) editInfo.label;
       Log.info("packageName=" + packageName + ",inputType=" + inputType + ",fieldId=" + fieldId+" label="+label);
       String str= Rime.getComposingText();
-      if (suggest_on && mCandidateContainer != null && !TextUtils.isEmpty(str) && checkInputType(inputType,fieldId)) {
+      if (mIsSuggestOn && mCandidateContainer != null && !TextUtils.isEmpty(str) && checkInputType(inputType,fieldId)) {
 
         NetworkService.getInstance().getSuggestList(str, new Callback<List<String>>() {
 
