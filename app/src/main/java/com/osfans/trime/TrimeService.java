@@ -623,6 +623,9 @@ public class TrimeService extends InputMethodService implements
             Log.info("net err:"+arg0.toString());
           }
         });
+      }else{
+        mSuggestListView.setVisibility(View.GONE);
+        Log.info("hide mSuggestListView");
       }
     }
 
