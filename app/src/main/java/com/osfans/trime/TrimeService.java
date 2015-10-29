@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
@@ -308,6 +309,8 @@ public class TrimeService extends InputMethodService implements
   @Override
   public void onStartInputView(EditorInfo attribute, boolean restarting) {
     super.onStartInputView(attribute, restarting);
+    Log.info("start input view");
+    mSuggestListView.setAdapter(null);
     if(!mIsSuggestOn){
       mSuggestShowButton.performClick();
     }
@@ -509,14 +512,14 @@ public class TrimeService extends InputMethodService implements
 
     }
 
-    // 输入框内容为空时，关闭提示数据
+    // 退格输入框内容为空时，关闭提示数据
     InputConnection ic=getCurrentInputConnection();
-    if(ic!=null && mIsSuggestOn){
-      CharSequence currentText = ic.getExtractedText(new ExtractedTextRequest(), 0).text;
-      Log.info("currentText in editor->"+currentText);
-      if(TextUtils.isEmpty(currentText)){
+    if(primaryCode==67 && mask==0  && mIsSuggestOn && ic!=null){
+      ExtractedText et=ic.getExtractedText(new ExtractedTextRequest(), 0);
+
+      if(et!=null && TextUtils.isEmpty(et.text)){
         mSuggestListView.setAdapter(null);
-        // mSuggestListView.removeAllViews();
+        Log.info("currentText in editor->" + et.text);
       }
 
     }
