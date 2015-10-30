@@ -285,7 +285,8 @@ public class TrimeService extends InputMethodService implements
       public void onClick(View v) {
         mIsSuggestOn = !mIsSuggestOn;
         if (mIsSuggestOn) {
-          mSuggestListView.setVisibility(View.VISIBLE);
+          mSuggestListView.setVisibility(mSuggestListView.getAdapter()!=null?View.VISIBLE:View.GONE);
+
           mSuggestShowButton.setImageResource(R.drawable.suggest_show_down);
         } else {
           mSuggestListView.setVisibility(View.GONE);
