@@ -398,7 +398,7 @@ preset_keyboards:
   symbol:
       author: "osfans <waxaca@163.com>"
       height: 42
-      keys: [{click: 0},{click: 1},{click: 2},{click: 3},{click: 4},{click: 5},{click: 6},{click: 7},{click: 8},{click: 9},{click: "'"},{click: "."}, {click: "@"}, {click: "~"}, {click: "-"}, {click: ","}, {click: ":"}, {click: "*"}, {click: "?"}, {click: "!"}, {click: "_"}, {click: "#"}, {click: "/"}, {click: "="}, {click: "+"}, {click: "&"}, {click: "^"}, {click: ";"}, {click: "%"}, {click: "$"}, {click: "("}, {click: ")"}, {click: "\\"}, {click: "<"}, {click: ">"},{click: "|"},  {click: "["}, {click: "]"},{click: "。"}, {click: "，"},{click: "、"},{click: "\""}, {click: "{"}, {click: "}"},{click: Keyboard_default}, {click: space, width: 30}, {click: BackSpace}, {click: Return}]
+      keys: [{click: 0},{click: 1},{click: 2},{click: 3},{click: 4},{click: 5},{click: 6},{click: 7},{click: 8},{click: 9},{click: "'"},{click: "."}, {click: "@"}, {click: "~"}, {click: "-"}, {click: ","}, {click: ":"}, {click: "*"}, {click: "?"}, {click: "!"}, {click: "_"}, {click: "#"}, {click: "/"}, {click: "="}, {click: "+"}, {click: "&"}, {click: "^"}, {click: ";"}, {click: "%"}, {click: "("}, {click: ")"}, {click: "\\"}, {click: "<"}, {click: ">"},{click: "|"},  {click: "["}, {click: "]"},{click: "。"}, {click: "，"},{click: "、"},{click: "\""}, {click: "{"}, {click: "}"}, {click: space, width: 30},{click: Keyboard_default}, {click: BackSpace, width: 15}, {click: Return, width: 15}]
       name: "symbol"
       width: 10
 preset_keys:
@@ -495,6 +495,10 @@ preset_keys:
   Insert:
     label: "插入"
     send: Insert
+  Keyboard_defaultenglish:
+      label: "字母"
+      select: defaultenglish
+      send: Eisu_toggle
   Keyboard_default:
     label: "字母"
     select: default
